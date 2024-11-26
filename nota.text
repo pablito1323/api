@@ -1,0 +1,40 @@
+
+para obtern todos los datos de la tabla
+http://localhost/PERSONAL_WebServicePostman/controller/controllerclientes.php?op=GetALL
+
+
+para obtener datos por id
+http://localhost/PERSONAL_WebServicePostman/controller/controllerclientes.php?op=GetId
+{
+    "id_cliente" : 1
+}
+
+insertar datos
+http://localhost/PERSONAL_WEBSERVICEPOSTMAN/controller/controllerclientes.php?op=Post
+{
+    "nombre_cliente": "Juan Pérez",
+    "correo": "juan.perez@example.com",
+    "telefono": "555123456",
+    "direccion": "Calle Falsa 123"
+}
+
+
+para actualizar 
+http://localhost/PERSONAL_WEBSERVICEPOSTMAN/controller/controllerclientes.php?op=Put
+{
+    "id_cliente": 13,
+    "nombre_cliente": "Carlos Pérez Actualizado",
+    "correo": "carlos.perez.updated@example.com",
+    "telefono": "555-9876",
+    "direccion": "Nueva Dirección 123"
+}
+
+
+para eliminar 
+http://localhost/PERSONAL_WEBSERVICEPOSTMAN/controller/controllerclientes.php?op=Delete
+{
+    "id_cliente" : 1
+}
+
+
+ALTER TABLE clientes AUTO_INCREMENT = 11; -- Ajusta "11" al siguiente valor desead

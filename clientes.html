@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Clientes</title>
+    <!-- Enlazar Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f7fc;
+        }
+
+        header {
+            background-color: #008CBA;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #008CBA;
+            color: white;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+        /* Estilos para el menú vertical */
+        .menu {
+            height: 100vh;
+            width: 250px;
+            background-color: #343a40;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding-top: 20px;
+        }
+
+        .menu a {
+            color: white;
+            text-decoration: none;
+            padding: 15px;
+            display: block;
+            font-size: 18px;
+        }
+
+        .menu a:hover {
+            background-color: #007bff;
+        }
+
+        /* Contenido principal */
+        .content {
+            margin-left: 220px;
+            padding: 20px;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Menú vertical -->
+    <div class="menu">
+        <a href="inicio.html">Inicio</a> <!-- Cambié el enlace de inicio a home.html -->
+        <a href="clientes.html">Clientes</a>
+        <a href="tabla.php">Usuarios</a>
+        <a href="reportes.html">Reportes</a>
+        <!-- Puedes agregar más enlaces aquí -->
+    </div>
+
+    <header>
+        Lista de Clientes
+    </header>
+
+    <div class="container my-4">
+        <div class="row mb-3">
+            <div class="col-md-8">
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar cliente..." onkeyup="filtrarClientes()">
+            </div>
+            <div class="col-md-4 text-end">
+                <button class="btn btn-success" onclick="abrirModalAgregar()">Agregar Cliente</button>
+            </div>
+        </div>
+
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>Teléfono</th>
+                    <th>Dirección</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="clientesTable">
+                <!-- Los datos de los clientes se insertarán aquí -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal para Agregar Cliente -->
+    <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addModalLabel">Agregar Nuevo Cliente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addForm">
+                        <div class="mb-3">
+                            <label for="addNombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="addNombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addCorreo" class="form-label">Correo</label>
+                            <input type="email" class="form-control" id="addCorreo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addTelefono" class="form-label">Teléfono</label>
+                            <input type="text" class="form-control" id="addTelefono" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addDireccion" class="form-label">Dirección</label>
+                            <input type="text" class="form-control" id="addDireccion" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" onclick="guardarNuevoCliente()">Guardar Cliente</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Edición -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Editar Cliente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm">
+                        <div class="mb-3">
+                            <label for="editNombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="editNombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editCorreo" class="form-label">Correo</label>
+                            <input type="email" class="form-control" id="editCorreo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editTelefono" class="form-label">Teléfono</label>
+                            <input type="text" class="form-control" id="editTelefono" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editDireccion" class="form-label">Dirección</label>
+                            <input type="text" class="form-control" id="editDireccion" required>
+                        </div>
+                        <input type="hidden" id="editId">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" onclick="guardarCambios()">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        © 2024 Lista de Clientes
+    </footer>
+
+    <!-- Enlazar jQuery y Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    
+    <script>
+        let clientes = []; // Variable para almacenar la lista de clientes
+
+        // Función para obtener todos los clientes
+        async function obtenerClientes() {
+            const response = await fetch('http://localhost/PERSONAL_WEBSERVICEPOSTMAN/controller/controllerclientes.php?op=GetALL');
+            clientes = await response.json(); // Almacenar los clientes en la variable
+            mostrarClientes(clientes); // Mostrar los clientes
+        }
+
+        // Función para mostrar los clientes en la tabla
+        function mostrarClientes(clientes) {
+            const tbody = document.getElementById('clientesTable');
+            tbody.innerHTML = ''; // Limpiar el tbody
+
+            clientes.forEach(cliente => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${cliente.id_cliente}</td>
+                    <td>${cliente.nombre_cliente}</td>
+                    <td>${cliente.correo}</td>
+                    <td>${cliente.telefono}</td>
+                    <td>${cliente.direccion}</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editarCliente(${cliente.id_cliente})">Editar</button>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarCliente(${cliente.id_cliente})">Eliminar</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Función para abrir el modal de agregar cliente
+        function abrirModalAgregar() {
+            document.getElementById('addForm').reset(); // Resetear el formulario
+            const addModal = new bootstrap.Modal(document.getElementById('addModal'));
+            addModal.show(); // Mostrar el modal de agregar cliente
+        }
+
+        // Función para guardar el nuevo cliente
+        async function guardarNuevoCliente() {
+            const nombre = document.getElementById('addNombre').value;
+            const correo = document.getElementById('addCorreo').value;
+            const telefono = document.getElementById('addTelefono').value;
+            const direccion = document.getElementById('addDireccion').value;
+
+            if (nombre && correo && telefono && direccion) {
+                const response = await fetch('http://localhost/PERSONAL_WEBSERVICEPOSTMAN/controller/controllerclientes.php?op=Post', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        nombre_cliente: nombre,
+                        correo: correo,
+                        telefono: telefono,
+                        direccion: direccion
+                    })
+                });
+
+                const resultado = await response.json();
+                alert(resultado.mensaje || resultado.error); // Muestra el mensaje de éxito o error
+                await obtenerClientes(); // Actualiza la lista de clientes
+
+                // Cerrar el modal
+                const addModal = bootstrap.Modal.getInstance(document.getElementById('addModal'));
+                addModal.hide();
+            } else {
+                alert("Todos los campos son obligatorios para agregar un cliente.");
+            }
+        }
+
+        // Función para editar un cliente y abrir el modal
+        async function editarCliente(id) {
+            const cliente = clientes.find(cliente => cliente.id_cliente === id);
+
+            document.getElementById('editId').value = cliente.id_cliente;
+            document.getElementById('editNombre').value = cliente.nombre_cliente;
+            document.getElementById('editCorreo').value = cliente.correo;
+            document.getElementById('editTelefono').value = cliente.telefono;
+            document.getElementById('editDireccion').value = cliente.direccion;
+
+            const editModal = new bootstrap.Modal(document.getElementById('editModal'));
+            editModal.show(); // Mostrar el modal de editar
+        }
+
+        // Función para guardar los cambios de un cliente
+        async function guardarCambios() {
+            const id = document.getElementById('editId').value;
+            const nombre = document.getElementById('editNombre').value;
+            const correo = document.getElementById('editCorreo').value;
+            const telefono = document.getElementById('editTelefono').value;
+            const direccion = document.getElementById('editDireccion').value;
+
+            if (nombre && correo && telefono && direccion) {
+                const response = await fetch('http://localhost/PERSONAL_WEBSERVICEPOSTMAN/controller/controllerclientes.php?op=Put', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id_cliente: id,
+                        nombre_cliente: nombre,
+                        correo: correo,
+                        telefono: telefono,
+                        direccion: direccion
+                    })
+                });
+
+                const resultado = await response.json();
+                alert(resultado.mensaje || resultado.error); // Muestra el mensaje de éxito o error
+                await obtenerClientes(); // Actualiza la lista de clientes
+
+                // Cerrar el modal
+                const editModal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
+                editModal.hide();
+            } else {
+                alert("Todos los campos son obligatorios para editar.");
+            }
+        }
+
+        // Función para eliminar un cliente
+        async function eliminarCliente(id) {
+            const confirmacion = confirm("¿Estás seguro de que deseas eliminar este cliente?");
+            if (confirmacion) {
+                const response = await fetch('http://localhost/PERSONAL_WEBSERVICEPOSTMAN/controller/controllerclientes.php?op=Delete', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id_cliente: id }) // Enviar el ID del cliente a eliminar
+                });
+
+                const resultado = await response.json();
+                alert(resultado.mensaje || resultado.error); // Muestra el mensaje de éxito o error
+                await obtenerClientes(); // Actualiza la lista de clientes
+            }
+        }
+
+        // Función para filtrar clientes
+        function filtrarClientes() {
+            const input = document.getElementById('searchInput');
+            const filtro = input.value.toLowerCase(); // Convertir a minúsculas para comparación
+            const clientesFiltrados = clientes.filter(cliente => {
+                return (
+                    cliente.nombre_cliente.toLowerCase().includes(filtro) ||
+                    cliente.correo.toLowerCase().includes(filtro) ||
+                    cliente.telefono.toLowerCase().includes(filtro) ||
+                    cliente.direccion.toLowerCase().includes(filtro)
+                );
+            });
+            mostrarClientes(clientesFiltrados); // Mostrar los clientes filtrados
+        }
+
+        // Llamar a la función para obtener todos los clientes al cargar la página
+        document.addEventListener('DOMContentLoaded', obtenerClientes);
+    </script>
+</body>
+</html>
+
+
